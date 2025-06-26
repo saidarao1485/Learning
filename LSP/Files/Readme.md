@@ -1,6 +1,6 @@
 # Programs on Files
-### Write a C program to create a new text file and write "Hello, World!" to it?
 ```c
+1. Write a C program to create a new text file and write "Hello, World!" to it?
 #include <stdio.h>
 int main() {
     char filename[100];
@@ -21,7 +21,7 @@ int main() {
     fclose(file);
     return 0;
 }
-### Develop a C program to open an existing text file and display its contents?
+2. Develop a C program to open an existing text file and display its contents?
 #include <stdio.h>
 #include <stdlib.h>
 int main() {
