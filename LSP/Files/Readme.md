@@ -1,7 +1,6 @@
-#
-##
+#Programs on Files
+##Write a C program to create a new text file and write "Hello, World!" to it?
 ```c
-//Write a C program to create a new text file and write "Hello, World!" to it?
 #include <stdio.h>
 int main() {
     char filename[100];
