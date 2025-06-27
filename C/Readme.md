@@ -105,6 +105,85 @@ int main() {
     return 0;
 }
 
+4. Write a program to partition an array such that all the negative numbers are on the left side of the array and positive numbers on the right side.
+#include <stdio.h>
+#include <stdlib.h>
+void sortArray(int arr[], int n) {
+    for (int i = 0; i < n-1; i++) {
+        for (int j = 0; j < n-i-1; j++) {
+            if (arr[j] > arr[j+1]) {
+                int temp = arr[j];
+                arr[j] = arr[j+1];
+                arr[j+1] = temp;
+            }
+        }
+    }
+}
+void printArray(int arr[], int n) {
+    for (int i = 0; i < n; i++)
+        printf("%d ", arr[i]);
+    printf("\n");
+}
+int main()
+{
+    int n;
+    printf("Enter number of elements: ");
+    scanf("%d", &n);
+    int arr[n];
+    printf("Enter %d elements:\n", n);
+    for (int i = 0; i < n; i++)
+        scanf("%d", &arr[i]);
+    printf("Original array:\n");
+    printArray(arr, n);
+    sortArray(arr, n);
+    printf("Array after sorting (negatives left, positives right):\n");
+    printArray(arr, n);
+
+    return 0;
+}
+
+5. Write a program to rotate a matrix 90 degrees clockwise in C. 
+#include <stdio.h>
+
+#define N 3
+void printMatrix(int mat[N][N]) {
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            printf("%d ", mat[i][j]);
+        }
+        printf("\n");
+    }
+}
+void rotate90Clockwise(int mat[N][N]) {
+    for (int i = 0; i < N; i++) {
+        for (int j = i; j < N; j++) {
+            int temp = mat[i][j];
+            mat[i][j] = mat[j][i];
+            mat[j][i] = temp;
+        }
+    }
+    for (int i = 0; i < N; i++) {
+        for (int j = 0, k = N - 1; j < k; j++, k--) {
+            int temp = mat[i][j];
+            mat[i][j] = mat[i][k];
+            mat[i][k] = temp;
+        }
+    }
+}
+int main() {
+    int mat[N][N] = {
+        {1, 2, 3},
+        {4, 5, 6},
+        {7, 8, 9}
+    };
+    printf("Original Matrix:\n");
+    printMatrix(mat);
+    rotate90Clockwise(mat);
+    printf("\nMatrix After 90 Degree Rotation (Clockwise):\n");
+    printMatrix(mat);
+    return 0;
+}
+
 
 
 
