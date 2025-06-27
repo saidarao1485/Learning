@@ -1273,4 +1273,150 @@ int main()
      printf("Number of hard links to file.txt: %lu\n", fileStat.st_nlink);
     return 0;
 }
+
+46. Develop a C program to copy the contents of all text files in a directory into a single file named "combined.txt"? 
+#include <stdio.h>
+#include <dirent.h>
+#include <string.h>
+int main()
+{
+    struct dirent *entry;
+    FILE *src, *dest;
+    char buffer[1024];
+    DIR *dir = opendir(".");
+    if (!dir)
+    {
+        perror("Could not open directory");
+        return 1;
+    }
+    dest = fopen("combined.txt", "w");
+    if (!dest)
+    {
+        perror("Could not create combined.txt");
+        closedir(dir);
+        return 1;
+    }
+    while ((entry = readdir(dir)) != NULL)
+    {
+        if (strstr(entry->d_name, ".c") && strcmp(entry->d_name, "combined.txt") != 0)
+	{
+            src = fopen(entry->d_name, "r");
+            if (!src) continue;
+            while (fgets(buffer, sizeof(buffer), src))
+	    {
+                fputs(buffer, dest);
+            }
+            fclose(src);
+        }
+    }
+    fclose(dest);
+    closedir(dir);
+    printf("All .txt files combined into combined.txt\n");
+    return 0;
+}
+
+47. Implement a C program to recursively calculate the total size of all files in a directory and its subdirectories? 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <dirent.h>
+#include <sys/stat.h>
+long long calculateSize(const char *path)
+{
+    DIR *dir;
+    struct dirent *entry;
+    struct stat info;
+    char fullPath[512];
+    long long total = 0;
+    dir = opendir(path);
+    if (!dir) return 0;
+    while ((entry = readdir(dir)) != NULL)
+    {
+          if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
+            continue;
+        snprintf(fullPath, sizeof(fullPath), "%s/%s", path, entry->d_name);
+        if (stat(fullPath, &info) == 0)
+        {
+            if (S_ISREG(info.st_mode))
+            {
+                total += info.st_size;
+            }
+            else if (S_ISDIR(info.st_mode))
+            {
+                total += calculateSize(fullPath);
+            }
+        }
+    }
+    closedir(dir);
+    return total;
+}
+int main()
+{
+    long long size = calculateSize(".");
+    printf("Total size: %lld bytes\n", size);
+    return 0;
+}
+
+48. Write a C program to get the number of bytes in a file named "data.bin"?
+#include <stdio.h>
+int main()
+{
+    FILE *file = fopen("data.bin", "rb");
+    long size;
+    if (file == NULL)
+    {
+        perror("Error opening file");
+        return 1;
+    }
+    fseek(file, 0, SEEK_END);
+    size = ftell(file);
+    fclose(file);
+    printf("Size of data.bin: %ld bytes\n", size);
+    return 0;
+}
+
+49. Develop a C program to create a new directory named with the current timestamp in the format "YYYY-MM-DD-HH-MM-SS"?
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+int main()
+{
+    time_t now;
+    struct tm *tm_info;
+    char dirname[64];
+    time(&now);
+    tm_info = localtime(&now);
+    strftime(dirname, sizeof(dirname), "%Y-%m-%d-%H-%M-%S", tm_info);
+    if (mkdir(dirname, 0777) == 0)
+    {
+        printf("Directory created: %s\n", dirname);
+    }
+    else
+    {
+        perror("Error creating directory");
+    }
+    return 0;
+}
+
+50. Write a C program to create a new directory named "Documents" in the current directory?
+#include <stdio.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+int main()
+{
+    if (mkdir("Documents", 0777) == 0)
+    {
+        printf("Directory 'Documents' created successfully.\n");
+    }
+    else
+    {
+        perror("Error creating directory");
+    }
+    return 0;
+}
+
+
+
 ```

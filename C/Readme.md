@@ -184,7 +184,115 @@ int main() {
     return 0;
 }
 
+6. Write a program to reverse a linked list.
+#include <stdio.h>
+#include <stdlib.h>
+void reverse(void* head)
+{
+    struct Node {
+        int data;
+        struct Node* next;
+    };
+    struct Node* prev = NULL;
+    struct Node* current = (struct Node*)head;
+    struct Node* next=NULL;
 
+    while (current != NULL)
+    {
+        next = current->next;
+        current->next = prev;
+        prev = current;
+        current = next;
+    }
 
+    head = prev;
+    while (head != NULL)
+    {
+        printf("%d -> ", ((struct Node*)head)->data);
+        head = ((struct Node*)head)->next;
+    }
+    printf("NULL\n");
+}
+int main()
+{
+    struct Node {
+        int data;
+        struct Node* next;
+    };
+
+    struct Node* head = NULL;
+    struct Node* temp = NULL;
+    int n, value;
+    printf("Enter the number of elements: ");
+    scanf("%d", &n);
+    printf("Enter %d elements:\n", n);
+    for (int i = 0; i < n; i++)
+    {
+        struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+        scanf("%d", &value);
+        newNode->data = value;
+        newNode->next = NULL;
+
+        if (head == NULL)
+        {
+            head = newNode; 
+        }
+        else
+        {
+            temp->next = newNode;  
+        }
+        temp = newNode;
+    }
+    printf("Original list:\n");
+    temp = head;
+    while (temp != NULL)
+    {
+        printf("%d -> ", temp->data);
+        temp = temp->next;
+    }
+    printf("NULL\n");
+    printf("Reversed list:\n");
+    reverse(head);
+    return 0;
+}
+7. Write a program to separate the even and odd numbers into separate arrays in C.
+#include <stdio.h>
+int main()
+{
+    int arr[100], even[100], odd[100];
+    int i, n, evenCount = 0, oddCount = 0;
+    printf("Enter the number of elements: ");
+    scanf("%d", &n);
+    printf("Enter %d integers:\n", n);
+    for(i = 0; i < n; i++)
+    {
+        scanf("%d", &arr[i]);
+    }
+    for(i = 0; i < n; i++)
+    {
+        if(arr[i] % 2 == 0)
+        {
+            even[evenCount++] = arr[i];
+        }
+        else
+        {
+            odd[oddCount++] = arr[i];
+        }
+    }
+    printf("Even numbers:\n");
+    for(i = 0; i < evenCount; i++)
+    {
+        printf("%d ", even[i]);
+    }
+    printf("\nOdd numbers:\n");
+    for(i = 0; i < oddCount; i++)
+    {
+        printf("%d ", odd[i]);
+    }
+    return 0;
+}
+
+8. 
+ 
 
 ```
