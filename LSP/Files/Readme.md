@@ -1417,6 +1417,216 @@ int main()
     return 0;
 }
 
+51. Develop a C program to check if a file named "file.txt" exists in the current directory?
+#include <stdio.h>
+int main() 
+{
+    FILE *file;
+    file = fopen("file.txt", "r");
+    if (file)
+    {
+        printf("The file 'file.txt' exists\n");
+        fclose(file);
+    }
+    else
+    {
+        printf("The file 'file.txt' does not exist\n");
+    }
+    return 0;
+}
 
+52. Implement a C program to open a file named "data.txt" in read mode and display its contents?
+#include <stdio.h>
+int main() 
+{
+    FILE *file;
+    char ch;
+    file = fopen("data.txt", "r");
+    if (file == NULL)
+    {
+        printf("Unable to open the file 'data.txt'\n");
+        return 1;
+    }
+    printf("Contents of 'data.txt':\n");
+    while ((ch = fgetc(file)) != EOF)
+    {
+        putchar(ch);
+    }
+    fclose(file);
+    return 0;
+}
+
+53. Write a C program to create a new text file named "output.txt" and write "Hello, World!" to it?
+#include <stdio.h>
+int main()
+{
+    FILE *file;
+    file = fopen("output.txt", "w");
+    if (file == NULL)
+    {
+        printf("Failed to create the file 'output.txt'\n");
+        return 1;
+    }
+    fprintf(file, "Hello, World!\n");
+    fclose(file);
+    printf("Data written to 'output.txt' successfully\n");
+    return 0;
+}
+
+54. Implement a C program to get the size of a file named "image.jpg"? 
+#include <stdio.h>
+int main()
+{
+    FILE *file = fopen("image.jpg", "rb");
+    if (file == NULL)
+    {
+        perror("Error opening file");
+        return 1;
+    }
+    fseek(file, 0, SEEK_END);
+    long size = ftell(file);
+    fclose(file);
+    if (size == -1L)
+    {
+        perror("Error getting file size");
+        return 1;
+    }
+    printf("Size of image.jpg: %ld bytes\n", size);
+    return 0;
+}
+
+55. Write a C program to create a new text file named "notes.txt" and write multiple lines of text to it?
+#include <stdio.h>
+int main()
+{
+    FILE *file;
+    file = fopen("notes.txt", "w");
+    if (file == NULL)
+    {
+        printf("Failed to create the file 'notes.txt'\n");
+        return 1;
+    }
+    fprintf(file, "This is line 1.\n");
+    fprintf(file, "This is line 2.\n");
+    fprintf(file, "This is line 3.\n");
+    fprintf(file, "End of notes.\n");
+    fclose(file);
+    printf("Multiple lines written to 'notes.txt' successfully\n");
+    return 0;
+}
+
+56. Develop a C program to count the number of words in a file named "essay.txt"?
+#include <stdio.h>
+#include <ctype.h>
+int main()
+{
+    FILE *file;
+    char ch;
+    int inWord = 0;
+    int wordCount = 0;
+    file = fopen("essay.txt", "r");
+    if (file == NULL)
+    {
+        printf("Could not open file 'essay.txt'\n");
+        return 1;
+    }
+    while ((ch = fgetc(file)) != EOF)
+    {
+        if (isspace(ch))
+	{
+            inWord = 0;
+        }
+	else if (inWord == 0)
+	{
+            inWord = 1;
+            wordCount++;
+        }
+    }
+    fclose(file);
+    printf("Number of words in 'essay.txt': %d\n", wordCount);
+    return 0;
+}
+
+57. Write a C program to create a symbolic link named "shortcut.txt" to a file named "target.txt"?
+#include <stdio.h>
+#include <unistd.h>
+int main()
+{
+    const char *target = "target.txt";
+    const char *linkName = "shortcut.txt";
+    if (symlink(target, linkName) == 0)
+    {
+        printf("Symbolic link 'shortcut.txt' created pointing to 'target.txt'\n");
+    }
+    else
+    {
+        perror("Error creating symbolic link");
+        return 1;
+    }
+    return 0;
+}
+
+58. Develop a C program to change the permissions of a file named "important.doc" to read and write for the owner only?
+#include <stdio.h>
+#include <sys/stat.h>
+int main()
+{
+    const char *filename = "important.doc";
+    if (chmod(filename, S_IRUSR | S_IWUSR) == 0)
+    {
+        printf("Permissions for '%s' changed to read/write for owner only\n", filename);
+    }
+    else
+    {
+        perror("Error changing permissions");
+        return 1;
+    }
+    return 0;
+}
+
+59. Write a C program to get the last access time of a file named "data.txt"?
+#include <stdio.h>
+#include <sys/stat.h>
+#include <time.h>
+int main()
+{
+    const char *filename = "data.txt";
+    struct stat fileStat;
+    if (stat(filename, &fileStat) == -1)
+    {
+        perror("Failed to get file status");
+        return 1;
+    }
+    printf("Last access time of '%s': %s", filename, ctime(&fileStat.st_atime));
+    return 0;
+}
+
+60. Develop a C program to read data from a binary file named "data.bin" and display it in hexadecimal format?
+#include <stdio.h>
+#include <stdlib.h>
+int main()
+{
+    FILE *file;
+    unsigned char buffer[16];
+    size_t bytesRead;
+    int i;
+    file = fopen("data.bin", "rb");
+    if (file == NULL)
+    {
+        perror("Failed to open file 'data.bin'");
+        return 1;
+    }
+    printf("Contents of 'data.bin' in hexadecimal:\n");
+    while ((bytesRead = fread(buffer, 1, sizeof(buffer), file)) > 0)
+    {
+        for (i = 0; i < bytesRead; i++)
+	{
+            printf("%02X ", buffer[i]);
+    }
+        printf("\n");
+    }
+    fclose(file);
+    return 0;
+}
 
 ```
