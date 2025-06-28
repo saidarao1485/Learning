@@ -187,7 +187,7 @@ int main()
     return 0;
 }
 
-7. Write a C program to simulate memory allocation using the best-fit algorithm.
+6. Write a C program to simulate memory allocation using the best-fit algorithm.
 include <stdio.h>
 #define MAX_BLOCKS 10
 #define MAX_PROCESSES 10
@@ -241,7 +241,7 @@ int main() {
     return 0;
 }
 
-8. Develop a C program to simulate memory allocation using the worst-fit algorithm.
+7. Develop a C program to simulate memory allocation using the worst-fit algorithm.
 #include <stdio.h>
 #define MAX_BLOCKS 10
 #define MAX_PROCESSES 10
@@ -303,7 +303,7 @@ int main()
     worstFit(blockSize, blocks, processSize, processes);
     return 0;
 }
-9. Implement a C program to simulate memory allocation using the next-fit algorithm.
+8. Implement a C program to simulate memory allocation using the next-fit algorithm.
 #include <stdio.h>
 #define MAX_BLOCKS 20
 #define MAX_PROCESSES 20
@@ -357,7 +357,7 @@ int main() {
     return 0;
 }
 
-10. Write a C program to implement a simple memory allocator using the buddy system.
+9. Write a C program to implement a simple memory allocator using the buddy system.
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -414,7 +414,7 @@ int main()
     return 0;
 }
 
-11. Develop a C program to implement a memory allocator using a custom memory management algorithm
+10. Develop a C program to implement a memory allocator using a custom memory management algorithm
 #include <stdio.h>
 #include <stddef.h>
 
@@ -468,7 +468,7 @@ int main()
     return 0;
 }
 
-12. Write a C program to demonstrate memory mapping using mmap().
+11. Write a C program to demonstrate memory mapping using mmap().
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -519,7 +519,7 @@ int main()
     return 0;
 }
 
-13. Implement a C program to read from and write to a memory-mapped file.
+12. Implement a C program to read from and write to a memory-mapped file.
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -570,7 +570,7 @@ int main()
     return 0;
 }
 
-14. Develop a C program to demonstrate shared memory usage using shmget() and shmat().
+13. Develop a C program to demonstrate shared memory usage using shmget() and shmat().
 //Program 1: Reader (shm_reader.c)
 #include <stdio.h>
 #include <stdlib.h>
@@ -642,7 +642,7 @@ int main()
     return 0;
 }
 
-15. Write a C program to create a shared memory segment and synchronize access using semaphores.
+14. Write a C program to create a shared memory segment and synchronize access using semaphores.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -738,7 +738,7 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-16. Implement a C program to simulate page replacement algorithms like FIFO, LRU, and optimal.
+15. Implement a C program to simulate page replacement algorithms like FIFO, LRU, and optimal.
 #include <stdio.h>
 
 #define MAX 50
