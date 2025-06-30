@@ -774,5 +774,346 @@ int main()
     }
     return 0;
 }
- 
+24. Write a C program to create a child process using fork() and demonstrate process communication using message queues. 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
+#include <unistd.h>
+#include <sys/wait.h>
+struct msg_buffer
+{
+    long msg_type;
+    char msg_text[100];
+};
+int main()
+{
+    key_t key;
+    int msgid;
+    struct msg_buffer message;
+    key = ftok("msgfile", 65);
+    if (key == -1)
+    {
+        perror("ftok");
+        exit(1);
+    }
+    msgid = msgget(key, 0666 | IPC_CREAT);
+    if (msgid == -1)
+    {
+        perror("msgget");
+        exit(1);
+    }
+    pid_t pid = fork();
+    if (pid < 0)
+    {
+        perror("fork");
+        exit(1);
+    }
+    if (pid == 0)
+    {
+        msgrcv(msgid, &message, sizeof(message.msg_text), 1, 0);
+        printf("Child received message: %s\n", message.msg_text);
+        msgctl(msgid, IPC_RMID, NULL);
+    }
+    else
+    {
+        strcpy(message.msg_text, "Hello from parent!");
+        message.msg_type = 1;
+        msgsnd(msgid, &message, sizeof(message.msg_text), 0);
+        wait(NULL);
+    }
+    return 0;
+}
+
+25. Write a C program to create a child process using fork() and demonstrate process synchronization using condition variables.
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <pthread.h>
+#include <sys/mman.h>
+#include <sys/wait.h>
+typedef struct {
+    pthread_mutex_t mutex;
+    pthread_cond_t cond;
+    int done;
+} shared_data;
+int main()
+{
+    shared_data *data = mmap(NULL, sizeof(shared_data),
+                             PROT_READ | PROT_WRITE,
+                             MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    if (data == MAP_FAILED)
+    {
+        perror("mmap");
+        exit(1);
+    }
+    pthread_mutexattr_t mattr;
+    pthread_condattr_t cattr;
+    pthread_mutexattr_init(&mattr);
+    pthread_mutexattr_setpshared(&mattr, PTHREAD_PROCESS_SHARED);
+    pthread_condattr_init(&cattr);
+    pthread_condattr_setpshared(&cattr, PTHREAD_PROCESS_SHARED);
+    pthread_mutex_init(&data->mutex, &mattr);
+    pthread_cond_init(&data->cond, &cattr);
+    data->done = 0;
+    pid_t pid = fork();
+    if (pid < 0)
+    {
+        perror("fork");
+        exit(1);
+    }
+    if (pid == 0)
+    {
+        sleep(1);
+        pthread_mutex_lock(&data->mutex);
+printf("Child: work done, signaling parent.\n");
+        data->done = 1;
+        pthread_cond_signal(&data->cond);
+        pthread_mutex_unlock(&data->mutex);
+    }
+    else
+    {
+        pthread_mutex_lock(&data->mutex);
+        while (data->done == 0)
+        {
+            pthread_cond_wait(&data->cond, &data->mutex);
+        }
+        printf("Parent: received signal from child.\n");
+        pthread_mutex_unlock(&data->mutex);
+        wait(NULL);
+    }
+    pthread_mutex_destroy(&data->mutex);
+    pthread_cond_destroy(&data->cond);
+    munmap(data, sizeof(shared_data));
+    return 0;
+}
+
+26. Write a C program to create a child process using fork() and demonstrate process communication using sockets.
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/socket.h>
+int main() {
+    int sv[2];  // sv[0] for parent, sv[1] for child
+
+    if (socketpair(AF_UNIX, SOCK_STREAM, 0, sv) == -1) {
+        perror("socketpair");
+        exit(1);
+    }
+
+    pid_t pid = fork();
+
+    if (pid < 0) {
+        perror("fork");
+        exit(1);
+    }
+
+    if (pid == 0) {
+        // Child process
+        close(sv[0]);  // Close parent's end
+
+        char buffer[100];
+        read(sv[1], buffer, sizeof(buffer));
+        printf("Child received: %s\n", buffer);
+
+        close(sv[1]);  // Close after use
+    } else {
+        // Parent process
+        close(sv[1]);  // Close child's end
+
+        const char *message = "Hello from parent via socket!";
+        write(sv[0], message, strlen(message) + 1);
+
+        wait(NULL);  // Wait for child to finish
+        close(sv[0]);  // Close after use
+    }
+
+    return 0;
+}
+27. Write a C program to create a child process using fork() and demonstrate process synchronization using mutexes.
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <pthread.h>
+#include <sys/mman.h>
+#include <sys/wait.h>
+int main()
+{
+    // Allocate shared memory for the mutex
+    pthread_mutex_t *mutex = mmap(NULL, sizeof(pthread_mutex_t),
+                                  PROT_READ | PROT_WRITE,
+                                  MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+
+    if (mutex == MAP_FAILED) {
+        perror("mmap");
+        exit(1);
+    }
+    // Initialize mutex attributes for inter-process sharing
+    pthread_mutexattr_t attr;
+    pthread_mutexattr_init(&attr);
+    pthread_mutexattr_setpshared(&attr, PTHREAD_PROCESS_SHARED);
+    pthread_mutex_init(mutex, &attr);
+    pid_t pid = fork();
+    if (pid < 0) {
+        perror("fork");
+        exit(1);
+    }
+    if (pid == 0) {
+        // Child process
+        pthread_mutex_lock(mutex);
+        printf("Child: Acquired lock. Doing work...\n");
+        sleep(1);
+        printf("Child: Releasing lock.\n");
+        pthread_mutex_unlock(mutex);
+    } else {
+        // Parent process
+        sleep(0.5); // Ensure child tries first (for demo)
+        pthread_mutex_lock(mutex);
+        printf("Parent: Acquired lock after child.\n");
+        pthread_mutex_unlock(mutex);
+    wait(NULL); // Wait for child
+    }
+    // Cleanup
+    pthread_mutex_destroy(mutex);
+    pthread_mutexattr_destroy(&attr);
+    munmap(mutex, sizeof(pthread_mutex_t));
+    return 0;
+}
+
+28. Write a C program to create a child process using fork() and demonstrate process communication using named pipes (FIFOs).
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <string.h>
+
+#define FIFO_NAME "myfifo"
+int main()
+{
+    pid_t pid;
+    char message[] = "Hello from child!";
+    char buffer[100];
+    if (mkfifo(FIFO_NAME, 0666) == -1)
+    {
+        perror("mkfifo");
+    }
+    pid = fork();
+    if (pid < 0)
+    {
+        perror("fork");
+        exit(EXIT_FAILURE);
+    }
+    else if (pid == 0)
+    {
+        int fd = open(FIFO_NAME, O_WRONLY);
+        if (fd == -1)
+        {
+            perror("Child: open");
+            exit(EXIT_FAILURE);
+        }
+        write(fd, message, strlen(message) + 1);
+        close(fd);
+        printf("Child: Message sent.\n");
+    }
+    else
+    {
+    int fd = open(FIFO_NAME, O_RDONLY);
+        if (fd == -1)
+        {
+            perror("Parent: open");
+            exit(EXIT_FAILURE);
+        }
+        read(fd, buffer, sizeof(buffer));
+        close(fd);
+        printf("Parent: Received message: '%s'\n", buffer);
+        unlink(FIFO_NAME);
+    }
+    return 0;
+}
+29. Write a C program to create a child process using fork() and demonstrate process communication using shared memory and semaphores
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <sys/sem.h>
+
+#define SHM_KEY 0x1234
+#define SEM_KEY 0x5678
+#define SHM_SIZE 100
+
+union semun {
+    int val;
+};
+
+void sem_wait(int semid) {
+    struct sembuf sb = {0, -1, 0};  // wait
+    semop(semid, &sb, 1);
+}
+
+void sem_signal(int semid) {
+    struct sembuf sb = {0, 1, 0};   // signal
+    semop(semid, &sb, 1);
+}
+
+int main() {
+    int shmid, semid;
+    char *shared_data;
+    shmid = shmget(SHM_KEY, SHM_SIZE, IPC_CREAT | 0666);
+    if (shmid == -1) {
+        perror("shmget");
+        exit(1);
+    }
+    semid = semget(SEM_KEY, 1, IPC_CREAT | 0666);
+    if (semid == -1) {
+        perror("semget");
+        exit(1);
+    }
+union semun sem_union;
+    sem_union.val = 0;
+    semctl(semid, 0, SETVAL, sem_union);
+
+    pid_t pid = fork();
+
+    if (pid < 0) {
+        perror("fork");
+        exit(1);
+    }
+    else if (pid == 0) {
+        shared_data = (char *)shmat(shmid, NULL, 0);
+        if (shared_data == (char *)(-1)) {
+            perror("shmat (child)");
+            exit(1);
+        }
+
+        strcpy(shared_data, "Hello from child!");
+        printf("Child: Written to shared memory.\n");
+
+        sem_signal(semid); // Signal parent
+        shmdt(shared_data); // Detach
+    }
+
+    else {
+        // Parent process
+        shared_data = (char *)shmat(shmid, NULL, 0);
+        if (shared_data == (char *)(-1)) {
+            perror("shmat (parent)");
+            exit(1);
+        }
+
+        sem_wait(semid); // Wait for child
+        printf("Parent: Read from shared memory: %s\n", shared_data);
+         // Cleanup
+        shmdt(shared_data);
+        shmctl(shmid, IPC_RMID, NULL);
+        semctl(semid, 0, IPC_RMID);
+    }
+
+    return 0;
+}
 ```
